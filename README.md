@@ -30,7 +30,7 @@ loaded with the same pipeline command using an earlier start date.
 
 ## Screenshots
 
-Captured from the running local app on **2026-11-02**, using the author's two
+Captured from the running local app on **2026-11-02**, using two
 school sample projects and published ECB/Frankfurter observations. The sidebar
 is filtered to those school projects. Rates and amounts are snapshots, not a live feed.
 

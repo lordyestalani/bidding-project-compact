@@ -1,7 +1,7 @@
 # Screenshot notes
 
 Captured on 2026-11-02 from the running application at localhost:15180.
-The two school projects are sample data approved by the author for documentation.
+The two school projects use sample data for demonstration.
 The sidebar search is set to School. No saved cash flows were edited during capture.
 
 - project-overview.png: School Supply (Tech) Procurement; PHP 5,000,000 incoming,
