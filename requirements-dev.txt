@@ -1,0 +1,6 @@
+-r api/requirements.txt
+pytest==9.1.1
+httpx2==2.15.1
+dbt-core==1.12.6
+dbt-postgres==1.11.0
+black==26.1.0

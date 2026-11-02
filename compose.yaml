@@ -1,0 +1,120 @@
+name: bidding-simple
+
+x-pipeline: &pipeline
+  image: bidding-simple-pipeline:local
+  build:
+    context: .
+    dockerfile: docker/pipeline.Dockerfile
+  environment: &pipeline-env
+    DATABASE_URL: postgresql://bidding:${POSTGRES_PASSWORD:?Run Start.ps1}@postgres:5432/bidding
+    DBT_SEND_ANONYMOUS_USAGE_STATS: 'false'
+  depends_on:
+    postgres: {condition: service_healthy}
+
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    environment:
+      POSTGRES_USER: bidding
+      POSTGRES_DB: bidding
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run Start.ps1}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/10-databases.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U bidding -d bidding']
+      interval: 3s
+      timeout: 5s
+      retries: 20
+
+  setup:
+    <<: *pipeline
+    command: [/opt/pipeline-env/bin/python, -m, pipeline.bootstrap]
+    profiles: [tools]
+
+  api:
+    image: bidding-simple-api:local
+    build: {context: ., dockerfile: docker/api.Dockerfile}
+    environment:
+      DATABASE_URL: postgresql://bidding:${POSTGRES_PASSWORD:?Run Start.ps1}@postgres:5432/bidding
+    depends_on:
+      postgres: {condition: service_healthy}
+    ports: ['127.0.0.1:${API_PORT:-18080}:8000']
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  web:
+    image: bidding-simple-web:local
+    build: {context: ., dockerfile: docker/web.Dockerfile}
+    depends_on:
+      api: {condition: service_healthy}
+    ports: ['127.0.0.1:${WEB_PORT:-15180}:80']
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1/]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  tests:
+    image: bidding-simple-tests:local
+    build: {context: ., dockerfile: docker/tests.Dockerfile}
+    environment:
+      TEST_DATABASE_URL: postgresql://bidding:${POSTGRES_PASSWORD:?Run Start.ps1}@postgres:5432/bidding_simple_test
+    depends_on:
+      postgres: {condition: service_healthy}
+    profiles: [tests]
+
+  test-api:
+    image: bidding-simple-api:local
+    environment:
+      DATABASE_URL: postgresql://bidding:${POSTGRES_PASSWORD:?Run Start.ps1}@postgres:5432/bidding_simple_test
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=3)"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+    profiles: [tests]
+
+  test-web:
+    image: bidding-simple-web:local
+    environment: {API_UPSTREAM: 'test-api:8000'}
+    depends_on:
+      test-api: {condition: service_healthy}
+    ports: ['127.0.0.1:15181:80']
+    profiles: [tests]
+
+  airflow:
+    <<: *pipeline
+    environment:
+      <<: *pipeline-env
+      AIRFLOW_PASSWORD: ${AIRFLOW_PASSWORD:?Run Start.ps1}
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://bidding:${POSTGRES_PASSWORD:?Run Start.ps1}@postgres:5432/airflow
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__DAGS_FOLDER: /app/pipeline/dags
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_USERS: admin:admin
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE: /opt/airflow/auth/passwords.json
+      AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW_FERNET_KEY:?Run Start.ps1}
+      AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW_JWT_SECRET:?Run Start.ps1}
+      AIRFLOW__API__BASE_URL: http://localhost:${AIRFLOW_PORT:-18081}
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://localhost:8080/execution/
+      AIRFLOW__LOGGING__MASK_SECRETS_IN_LOGS: 'true'
+    ports: ['127.0.0.1:${AIRFLOW_PORT:-18081}:8080']
+    volumes:
+      - airflow_logs:/opt/airflow/logs
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8080/api/v2/monitor/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      start_period: 45s
+      retries: 12
+
+volumes:
+  postgres_data:
+  airflow_logs:

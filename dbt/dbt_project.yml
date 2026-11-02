@@ -1,0 +1,9 @@
+name: bidding_fx
+version: '1.0.0'
+config-version: 2
+profile: bidding_fx
+model-paths: [models]
+macro-paths: [macros]
+models:
+  bidding_fx:
+    +materialized: view

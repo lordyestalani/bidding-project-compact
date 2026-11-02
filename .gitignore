@@ -1,0 +1,55 @@
+# Local credentials; keep the safe setup template.
+.env
+.env.*
+!.env.example
+
+# Python environments, bytecode, and tool caches.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.nox/
+
+# Installed frontend dependencies and generated bundles.
+node_modules/
+dist/
+build/
+.vite/
+.vitest/
+*.tsbuildinfo
+
+# Test output and coverage; keep test source and fixtures.
+coverage/
+htmlcov/
+.coverage*
+test-results/
+playwright-report/
+blob-report/
+
+# Generated dbt models, downloaded packages, and local identity.
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
+
+# Agent working notes, temporary files, and runtime logs.
+.superpowers/
+.cache/
+.tmp/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Machine-specific editor and operating-system files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini

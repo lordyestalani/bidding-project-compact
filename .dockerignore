@@ -1,0 +1,11 @@
+.git
+.env
+.venv
+.superpowers
+**/node_modules
+**/dist
+**/__pycache__
+dbt/target
+dbt/logs
+web/test-results
+web/playwright-report

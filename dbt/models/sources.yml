@@ -1,0 +1,30 @@
+version: 2
+sources:
+  - name: app
+    schema: app
+    tables: [{name: projects}, {name: cash_flows}]
+  - name: raw
+    schema: raw
+    tables: [{name: observations}]
+  - name: ops
+    schema: ops
+    tables: [{name: runs}]
+  - name: analytics
+    schema: analytics
+    tables: [{name: fx_rates}]
+models:
+  - name: stg_fx
+    data_tests: [has_rows, valid_fx]
+    columns:
+      - name: observation_date
+        data_tests: [not_null, unique]
+      - name: rate
+        data_tests: [not_null]
+  - name: project_totals
+    columns:
+      - name: project_id
+        data_tests: [unique, not_null]
+  - name: project_estimates
+    columns:
+      - name: project_id
+        data_tests: [unique, not_null]
