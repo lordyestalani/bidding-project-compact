@@ -94,7 +94,7 @@ export function ProfitChart({
   const points = data?.points ?? [];
   const W = 720,
     H = 245,
-    L = 78,
+    L = 100,
     R = 18,
     T = 18,
     B = 35;

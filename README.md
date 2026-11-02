@@ -28,6 +28,64 @@ details or open View observations for the data table. Profits display in cents;
 the API retains four decimal places. More history can be
 loaded with the same pipeline command using an earlier start date.
 
+## Screenshots
+
+Captured from the running local app on **2026-11-02**, using the author's two
+school sample projects and published ECB/Frankfurter observations. The sidebar
+is filtered to those school projects. Rates and amounts are snapshots, not a live feed.
+
+### Project overview
+
+Select a project to see incoming cash flows, outgoing cash flows, estimated
+profit, and the FX history chart. **School Supply (Tech) Procurement** has
+PHP 5,000,000 incoming and USD 60,000 outgoing. At the displayed reference rate
+of **63.68 PHP per USD**, its estimated profit is **PHP 1,179,200**.
+
+![Profitable school technology procurement sample with PHP totals and historical FX chart](docs/screenshots/project-overview.png)
+
+### Historical FX chart and slider comparison
+
+The solid line revalues the project's **current saved cash flows** at each
+published historical rate. Green portions represent estimated profit; red
+portions represent estimated loss. The zero line marks break-even. The dashed
+gold line is the estimated profit or loss at the slider's hypothetical rate.
+
+**School Supply Procurement** has the same PHP 5,000,000 income but USD 94,000
+in supplier costs. At the displayed reference rate it has an estimated
+**PHP 985,920 loss**. Its historical FX estimates are shown in red. The dashed
+gold line shows how a hypothetical **50 PHP per USD** rate would instead produce
+a **PHP 300,000 profit**.
+
+![School procurement historical FX losses in red with a profitable slider scenario above zero](docs/screenshots/fx-profit-chart.png)
+
+### Comparing a loss with a profitable scenario
+
+At a hypothetical rate of 50, this project's USD 94,000 supplier cost becomes
+PHP 4,700,000. Subtracting that from PHP 5,000,000 incoming leaves an estimated
+PHP 300,000 profit. Changing the slider does not change saved cash flows or
+published reference rates.
+
+![FX slider at 50 PHP per USD showing PHP 4,700,000 outgoing and PHP 300,000 estimated profit](docs/screenshots/scenario-simulation.png)
+
+<details>
+<summary>Loss overview, cash-flow editor, and mobile layout</summary>
+
+The second school project at the displayed reference rate, before changing the
+slider, shows its estimated PHP 985,920 loss:
+
+![School procurement overview showing a PHP 985,920 estimated loss](docs/screenshots/loss-overview.png)
+
+Add or edit incoming and outgoing amounts independently, choosing PHP or USD for
+each line. Expected dates are optional; blank amounts remain unknown.
+
+![School procurement editor with PHP 5,000,000 incoming and USD 94,000 outgoing](docs/screenshots/cash-flow-editor.png)
+
+The same project and hypothetical profit scenario at a 390-pixel mobile viewport:
+
+<img src="docs/screenshots/mobile-view.png" alt="Mobile school project showing historical FX losses, a profitable slider scenario, and saved cash flows" width="390" />
+
+</details>
+
 ## Run locally
 
 Install Docker Desktop with Linux containers and PowerShell 7. Keep Docker running.
